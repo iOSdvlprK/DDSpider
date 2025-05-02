@@ -22,33 +22,44 @@ struct ContentView: View {
     }
     
     let dotRadius = 2.5
-    @State private var dragLocation: CGPoint = .zero
+    @State private var dragLocation: CGPoint = CGPoint(
+        x: CGFloat.random(in: 100...200),
+        y: CGFloat.random(in: 100...200)
+    )
     let radiusOfInfluence = 0.3 // in values between 0 and 1
+    let dragDotRadius = 5.0
     
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
             Canvas { context, size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
                 let circleRect = CGRect(
-                    x: center.x - dotRadius,
-                    y: center.y - dotRadius,
-                    width: dotRadius * 2,
-                    height: dotRadius * 2
+                    x: dragLocation.x - dragDotRadius,
+                    y: dragLocation.y - dragDotRadius,
+                    width: dragDotRadius * 2,
+                    height: dragDotRadius * 2
                 )
                 
-                context.fill(Path(ellipseIn: circleRect), with: .color(.blue))
+                let dragDot = Path(ellipseIn: circleRect)
                 
                 drawDotsAndLines(
                     context: context,
                     size: size,
                     dots: dots,
                     dotRadius: dotRadius,
-                    dragLocation: dragLocation,
+                    dragLocation: .zero,
                     radiusOfInfluence: radiusOfInfluence
                 )
+                
+                context.fill(dragDot, with: .color(.red))
             }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        dragLocation = value.location
+                    }
+            )
         }
     }
     
