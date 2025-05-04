@@ -26,7 +26,7 @@ struct ContentView: View {
         x: CGFloat.random(in: 100...200),
         y: CGFloat.random(in: 100...200)
     )
-    let radiusOfInfluence = 0.3 // in values between 0 and 1
+    let radiusOfInfluence = 0.2 // in values between 0 and 1
     let dragDotRadius = 5.0
     
     var body: some View {
@@ -71,6 +71,8 @@ struct ContentView: View {
         dragLocation: CGPoint,
         radiusOfInfluence: CGFloat
     ) {
+        let radius = radiusOfInfluence * min(size.width, size.height)
+        
         for dot in dots {
             let actualX = dot.x * size.width
             let actualY = dot.y * size.height
@@ -89,16 +91,27 @@ struct ContentView: View {
             context.fill(circle, with: .color(.blue))
             
             // draw noisy lines
-            drawNoisyLines(context: context, x0: dragLocation.x, y0: dragLocation.y, x1: actualX, y1: actualY, radius: radiusOfInfluence)
+            drawNoisyLines(context: context, x0: dragLocation.x, y0: dragLocation.y, x1: actualX, y1: actualY, radius: radius)
         }
     }
     
     func drawNoisyLines(context: GraphicsContext, x0: CGFloat, y0: CGFloat, x1: CGFloat, y1: CGFloat, radius: CGFloat) {
-        var path = Path()
-        path.move(to: CGPoint(x: x0, y: y0))
-        path.addLine(to: CGPoint(x: x1, y: y1))
+        let dist = distance(x0: x0, y0: y0, x1: x1, y1: y1)
         
-        context.stroke(path, with: .color(.white.opacity(0.7)))
+        if dist <= radius {
+            var path = Path()
+            path.move(to: CGPoint(x: x0, y: y0))
+            path.addLine(to: CGPoint(x: x1, y: y1))
+            
+            context.stroke(path, with: .color(.white.opacity(0.7)))
+        }
+        
+    }
+    
+    func distance(x0: CGFloat, y0: CGFloat, x1: CGFloat, y1: CGFloat) -> CGFloat {
+        let dx = x1 - x0
+        let dy = y1 - y0
+        return sqrt(dx * dx + dy * dy)
     }
 }
 
