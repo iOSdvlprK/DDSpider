@@ -77,7 +77,19 @@ struct ContentView: View {
             let actualX = dot.x * size.width
             let actualY = dot.y * size.height
             
-            let dim = dotRadius * 2
+            let distance = distance(x0: actualX, y0: actualY, x1: dragLocation.x, y1: dragLocation.y)
+            
+            var dim = dotRadius * 2
+            var color: GraphicsContext.Shading = .color(.blue)
+            
+            if distance > radius {
+                let factor = radius / distance // less than one
+                dim *= factor * factor
+            }
+            
+            if distance > 1.4 * radius {
+                color = .color(.green)
+            }
             
             let circle = Path(
                 ellipseIn: CGRect(
@@ -88,7 +100,7 @@ struct ContentView: View {
                 )
             )
             
-            context.fill(circle, with: .color(.blue))
+            context.fill(circle, with: color)
             
             // draw noisy lines
             drawNoisyLines(context: context, x0: dragLocation.x, y0: dragLocation.y, x1: actualX, y1: actualY, radius: radius)
