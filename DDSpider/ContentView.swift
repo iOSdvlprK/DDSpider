@@ -29,9 +29,26 @@ struct ContentView: View {
     let radiusOfInfluence = 0.2 // in values between 0 and 1
     let dragDotRadius = 5.0
     
+    @State private var opacity = 0.0
+    
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
+            
+            Text("🌸 Welcome to the Canvas! 🐣")
+                .font(.system(size: 52, weight: .heavy, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.mint, .pink, .yellow, .purple],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .multilineTextAlignment(.center)
+                .shadow(color: .white.opacity(0.7), radius: 12)
+                .padding()
+                .opacity(opacity)
+                .scaleEffect(opacity)
             
             Canvas { context, size in
                 let circleRect = CGRect(
@@ -60,6 +77,11 @@ struct ContentView: View {
                         dragLocation = value.location
                     }
             )
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 3)) {
+                opacity = 1.0
+            }
         }
     }
     
